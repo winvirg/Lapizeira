@@ -1,101 +1,115 @@
-# Topic de Luxo (vetor de nulos, múltiplos vetores, métodos privados)
+# Título do trabalho
 
-![](figura.jpg)
-O objetivo dessa atividade é exercitar o que vocês aprenderam no cinema com algumas variações. Aqui, vamos implementar um sistema de alocação de passageiros em uma topic. Nossa topic tem uma quantidade máxima de passageiros, mas também define alguns assentos preferenciais.
+![lapiseiras](https://images-na.ssl-images-amazon.com/images/I/81nUKdr245L._AC_SL1500_.jpg)
+
+Faça o modelo de uma lapiseira que pode conter um único grafite.
 
 - [Requisitos](#requisitos)
-- [Shell](#shell)
 - [Diagrama](#diagrama)
-- [Esqueleto](#esqueleto)
+- [Exemplo de execução](#exemplo-de-execução)
+- [Relatório de Entrega](#relatório-de-entrega)
 
 
-***
 ## Requisitos
-Seu sistema deverá:
 
-- **[3.0 P] Inicializar e Mostrar.** 
-    - Iniciar a topic solicitando a lotação máxima e a quantidade de cadeiras preferenciais.
-	- Retorne um IllegalArgumentException caso haja mais assentos prioritários do que assentos na topic.
-    - Mostrar o estado da topic
-		- Coloque a quantidade de vagas disponível seguido de uma quebra de linha.
-        - Coloque @ na frente das cadeiras preferenciais
-        - Coloque = na frente das cadeiras normais.
-	- Retornar a quantidade de vagas disponíveis.
-- **[5.0 P] Inserir.** 
-    - Inserir passageiros informando id e idade
-        - Se o passageiro for idoso (Idade >= 65):
-            - Se houver cadeiras preferenciais
-                - O coloque na primeira cadeira preferência.
-            - Senão
-                - O coloque na primeira cadeira normal.
-        - Se o passageiro não for idoso.
-            - Se houver cadeiras não preferenciais
-                - O coloque na primeira não preferencial.
-            - Se não
-                - O coloque na primeira cadeira preferencial.
-- **[2.0 P] Remover.** 
-    - Remover passageiros por id
+- Iniciar lapiseira
+  - Inicia uma lapiseira de determinado calibre sem grafite.
+- Inserir grafite
+  - Insere um grafite passando
+    - o calibre: float.
+    - a dureza: string.
+    - o tamanho em mm: int.
+  - Não deve aceitar um grafite de calibre não compatível.
+  - Não deve aceitar mais de um grafite.
+  - Zera a contagem de folhas escritas da lapiseira.
+- Remover grafite
+  - Retira o grafite se houver algum.
+- Escrever folha
+  - Não é possível escrever se não há grafite.
+  - A lapiseira deve contar o total de folhas escritas usando um grafite.
+  - Quanto mais macio o grafite, mais rapidamente ele se acaba. Para simplificar, use a seguinte regra:
+    - Grafite HB: 1mm por folha.
+    - Grafite 2B: 2mm por folha.
+    - Grafite 4B: 4mm por folha.
+    - Grafite 6B: 6mm por folha.
 
-Existe uma lista para as cadeiras normais e outra para as preferenciais. Para facilitar nas operações de busca e inserção, você deverá criar vários métodos privados para simplificar a lógica dos métodos principais.
-
+  - Se o grafite acabar, defina o objeto grafite como `null`.
+  - Se não houver grafite suficiente para terminar as folhas, contabilize quantas folhas completas foi possível escrever.
+  - Avise quando o grafite acabar.
+  
 ## Diagrama
+
 ![diagrama](diagrama.png)
 
+## Exemplo de execução 
 
-## Exemplo de execução
-```java
+````java
 public class Runner {
 
-    public static void main(final String[] args) {
+  public static void main(final String[] args) {
 
-        Topic topic = new Topic(5, 2);
-        System.out.println(topic.toString()); //[@ @ = = = ]
+    //Inserindo grafites
+    Lapiseira lapiseira = new Lapiseira(0.5f);
+    System.out.println(lapiseira); // Lapiseira{calibre=0.5, grafite=null}
 
-        Passageiro passageiro = new Passageiro("davi", 17);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@ @ =davi = = ]
-
-        passageiro = new Passageiro("joao", 103);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@joao @ =davi = = ]
-        passageiro = new Passageiro("ana", 35);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@joao @ =davi =ana = ]
-
-        passageiro = new Passageiro("rex", 20);
-        topic.subir(passageiro);
-        passageiro = new Passageiro("bia", 16);
-        topic.subir(passageiro);
-        System.out.println(topic); // [@joao @bia =davi =ana =rex ]
-
-        topic.descer("davi");
-        System.out.println(topic);
-        passageiro = new Passageiro("aragao", 96);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@joao @bia =aragao =ana =rex ]
-
-        passageiro = new Passageiro("lucas", 23);
-        if(!topic.subir(passageiro)){
-            System.out.println("Topic lotada"); //Topic lotada
-        }
-
-        if(!topic.descer("marcelo")){
-            System.out.println("Passageiro nao esta na topic"); //Passageiro nao esta na topic
-        }
-
-        topic.descer("ana");
-        passageiro = new Passageiro("bia", 16);
-        if(!topic.subir(passageiro)){
-            System.out.println("Passageiro ja esta na topic"); //Passageiro ja esta na topic
-        }
-        System.out.println(topic); //[@joao @bia =aragao = =rex ]
-
+    //Calibre imcompativel
+    if(lapiseira.inserir(new Grafite(0.7f, Grafite.Dureza.G_2B, 50)) == false) {
+      System.out.println("fail: calibre incompatível"); //fail: calibre incompatível
     }
+    lapiseira.inserir(new Grafite(0.5f, Grafite.Dureza.G_2B, 50));
+    System.out.println(lapiseira); //Lapiseira{calibre=0.5, grafite=Grafite{calibre=0.5, dureza=Dureza{label='Grafite 2B'}, tamanho=50}}
+
+    //Inserindo e Removendo
+    lapiseira = new Lapiseira(0.3f);
+    lapiseira.inserir(new Grafite(0.3f, Grafite.Dureza.G_2B, 50));
+    System.out.println(lapiseira); //Lapiseira{calibre=0.3, grafite=Grafite{calibre=0.3, dureza=Dureza{label='Grafite 2B'}, tamanho=50}}
+
+    if(lapiseira.inserir(new Grafite(0.3f, Grafite.Dureza.G_4B, 70)) == false) {
+      System.out.println("fail: ja existe grafite"); //fail: ja existe grafite
+    };
+    System.out.println(lapiseira); //Lapiseira{calibre=0.3, grafite=Grafite{calibre=0.3, dureza=Dureza{label='Grafite 2B'}, tamanho=50}}
+    lapiseira.remover();
+    lapiseira.inserir(new Grafite(0.3f, Grafite.Dureza.G_4B, 70));
+    System.out.println(lapiseira); //Lapiseira{calibre=0.3, grafite=Grafite{calibre=0.3, dureza=Dureza{label='Grafite 4B'}, tamanho=70}}
+
+    //Escrevendo
+    lapiseira = new Lapiseira(0.9f);
+    lapiseira.inserir(new Grafite(0.9f, Grafite.Dureza.G_4B, 4));
+    lapiseira.escrever(1);
+    if(lapiseira.getGrafite() == null) {
+      System.out.println("warning: grafite acabou"); //warning: grafite acabou
+    }
+    System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=null}
+
+    lapiseira.inserir(new Grafite(0.9f, Grafite.Dureza.G_4B, 30));
+    lapiseira.escrever(6);
+    System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=Grafite{calibre=0.9, dureza=Dureza{label='Grafite 4B'}, tamanho=6}}
+
+    if( lapiseira.escrever(3) == false) {
+      System.out.println("warning: grafite acabou"); //warning: grafite acabou
+      System.out.println(lapiseira.getFolhasEscritas() + " folhas escritas com esse grafite no total"); //8 folhas escritas com esse grafite no total
+    }
+    System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=null}
+
+    //case escrevendo 2
+    lapiseira = new Lapiseira(0.9f);
+    lapiseira.inserir(new Grafite(0.9f, Grafite.Dureza.G_2B, 15));
+    System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=Grafite{calibre=0.9, dureza=Dureza{label='Grafite 2B'}, tamanho=15}}
+
+    lapiseira.escrever(4);
+    System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=Grafite{calibre=0.9, dureza=Dureza{label='Grafite 2B'}, tamanho=7}}
+
+    if (lapiseira.escrever(4) == false){
+      System.out.println("warning: grafite acabou"); //warning: grafite acabou
+      System.out.println(lapiseira.getFolhasEscritas() + " folhas escritas com esse grafite no total"); //5 folhas escritas com esse grafite no total
+    };
+
+    System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=null}
+
+  }
 }
-
-```
-
+````
 
 ## Relatório de Entrega
 
-Não esqueça de preencher o seguinte [formulário](https://forms.gle/xTkFeehZ2ocTctPu9) ao completar a atividade.
+Não esqueça de preencher o seguinte formulário [Link para formulário](https://forms.gle/GeRf7CwafH7PaiGE7) ao completar a atividade.

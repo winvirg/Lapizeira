@@ -2,47 +2,63 @@ public class Runner {
 
     public static void main(final String[] args) {
 
-        Topic topic = new Topic(5, 2);
-        System.out.println(topic.toString()); //[@ @ = = = ]
+        //Inserindo grafites
+        Lapiseira lapiseira = new Lapiseira(0.5f);
+        System.out.println(lapiseira); // Lapiseira{calibre=0.5, grafite=null}
 
-        Passageiro passageiro = new Passageiro("davi", 17);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@ @ =davi = = ]
-
-        passageiro = new Passageiro("joao", 103);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@joao @ =davi = = ]
-        passageiro = new Passageiro("ana", 35);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@joao @ =davi =ana = ]
-
-        passageiro = new Passageiro("rex", 20);
-        topic.subir(passageiro);
-        passageiro = new Passageiro("bia", 16);
-        topic.subir(passageiro);
-        System.out.println(topic); // [@joao @bia =davi =ana =rex ]
-
-        topic.descer("davi");
-        System.out.println(topic);
-        passageiro = new Passageiro("aragao", 96);
-        topic.subir(passageiro);
-        System.out.println(topic); //[@joao @bia =aragao =ana =rex ]
-
-        passageiro = new Passageiro("lucas", 23);
-        if(!topic.subir(passageiro)){
-            System.out.println("Topic lotada"); //Topic lotada
+        //Calibre imcompativel
+        if(lapiseira.inserir(new Grafite(0.7f, Grafite.Dureza.G_2B, 50)) == false) {
+            System.out.println("fail: calibre incompatível"); //fail: calibre incompatível
         }
+        lapiseira.inserir(new Grafite(0.5f, Grafite.Dureza.G_2B, 50));
+        System.out.println(lapiseira); //Lapiseira{calibre=0.5, grafite=Grafite{calibre=0.5, dureza=Dureza{label='Grafite 2B'}, tamanho=50}}
 
-        if(!topic.descer("marcelo")){
-            System.out.println("Passageiro nao esta na topic"); //Passageiro nao esta na topic
-        }
+        //Inserindo e Removendo
+        lapiseira = new Lapiseira(0.3f);
+        lapiseira.inserir(new Grafite(0.3f, Grafite.Dureza.G_2B, 50));
+        System.out.println(lapiseira); //Lapiseira{calibre=0.3, grafite=Grafite{calibre=0.3, dureza=Dureza{label='Grafite 2B'}, tamanho=50}}
 
-        topic.descer("ana");
-        passageiro = new Passageiro("bia", 16);
-        if(!topic.subir(passageiro)){
-            System.out.println("Passageiro ja esta na topic"); //Passageiro ja esta na topic
+        if(lapiseira.inserir(new Grafite(0.3f, Grafite.Dureza.G_4B, 70)) == false) {
+            System.out.println("fail: ja existe grafite"); //fail: ja existe grafite
+        };
+        System.out.println(lapiseira); //Lapiseira{calibre=0.3, grafite=Grafite{calibre=0.3, dureza=Dureza{label='Grafite 2B'}, tamanho=50}}
+        lapiseira.remover();
+        lapiseira.inserir(new Grafite(0.3f, Grafite.Dureza.G_4B, 70));
+        System.out.println(lapiseira); //Lapiseira{calibre=0.3, grafite=Grafite{calibre=0.3, dureza=Dureza{label='Grafite 4B'}, tamanho=70}}
+
+        //Escrevendo
+        lapiseira = new Lapiseira(0.9f);
+        lapiseira.inserir(new Grafite(0.9f, Grafite.Dureza.G_4B, 4));
+        lapiseira.escrever(1);
+        if(lapiseira.getGrafite() == null) {
+            System.out.println("warning: grafite acabou"); //warning: grafite acabou
         }
-        System.out.println(topic); //[@joao @bia =aragao = =rex ]
+        System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=null}
+
+        lapiseira.inserir(new Grafite(0.9f, Grafite.Dureza.G_4B, 30));
+        lapiseira.escrever(6);
+        System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=Grafite{calibre=0.9, dureza=Dureza{label='Grafite 4B'}, tamanho=6}}
+
+        if( lapiseira.escrever(3) == false) {
+            System.out.println("warning: grafite acabou"); //warning: grafite acabou
+            System.out.println(lapiseira.getFolhasEscritas() + " folhas escritas com esse grafite no total"); //8 folhas escritas com esse grafite no total
+        }
+        System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=null}
+
+        //case escrevendo 2
+        lapiseira = new Lapiseira(0.9f);
+        lapiseira.inserir(new Grafite(0.9f, Grafite.Dureza.G_2B, 15));
+        System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=Grafite{calibre=0.9, dureza=Dureza{label='Grafite 2B'}, tamanho=15}}
+
+        lapiseira.escrever(4);
+        System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=Grafite{calibre=0.9, dureza=Dureza{label='Grafite 2B'}, tamanho=7}}
+
+        if (lapiseira.escrever(4) == false){
+            System.out.println("warning: grafite acabou"); //warning: grafite acabou
+            System.out.println(lapiseira.getFolhasEscritas() + " folhas escritas com esse grafite no total"); //5 folhas escritas com esse grafite no total
+        };
+
+        System.out.println(lapiseira); //Lapiseira{calibre=0.9, grafite=null}
 
     }
 }
